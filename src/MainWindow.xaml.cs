@@ -248,14 +248,14 @@ namespace Data_Log_Graphing_Utility
                             }
                             else
                             {
-                                Measurement_DateTime.Add(DateTime.ParseExact(line_Parts[0], "yyyy-MM-dd h:mm:ss tt", null));
+                                Measurement_DateTime.Add(DateTime.ParseExact(line_Parts[0], "yyyy-MM-dd h:mm:ss.fff tt", null));
                                 Measurement_Data.Add(0);
                                 insert_Log("Overload value detected: " + line_Parts[0] + ", " + line_Parts[1], 2);
                             }
                         }
                         else 
                         {
-                            Measurement_DateTime.Add(DateTime.ParseExact(line_Parts[0], "yyyy-MM-dd h:mm:ss tt", null));
+                            Measurement_DateTime.Add(DateTime.ParseExact(line_Parts[0], "yyyy-MM-dd h:mm:ss.fff tt", null));
                             Measurement_Data.Add(double.Parse(line_Parts[1]));
                         }
                     }
@@ -277,10 +277,23 @@ namespace Data_Log_Graphing_Utility
             (bool isValidGraphColor, int Value_Red, int Value_Green, int Value_Blue) = GraphColor_Check();
             if (isValidGraphColor == true)
             {
-                DateTime[] Measurement_DateTime = this.Measurement_DateTime.ToArray(); //Datetime data for the measurement data
                 double[] Measurement_Data = this.Measurement_Data.ToArray(); //Waveform Array
                 int count = Measurement_Data.Count();
-                Create_Waveform_Window(FileName, "", 0, 0, count - 1, Graph_Title_text.Text, Graph_Y_axisTitle_text.Text, Value_Red, Value_Green, Value_Blue, Measurement_Data, count, Measurement_DateTime);
+                if (Is_DateTime_Checked.IsChecked == true)
+                {
+                    double[] Measurement_Data_DateTime = new double[count];
+                    for (int i = 0; i < count; i++)
+                    {
+                        Measurement_Data_DateTime[i] = this.Measurement_DateTime[i].ToOADate();
+                    }
+                    Create_Waveform_Window(FileName, "", 0, 0, count - 1, Graph_Title_text.Text, Graph_Y_axisTitle_text.Text, Value_Red, Value_Green, Value_Blue, Measurement_Data, count, Measurement_Data_DateTime);
+                    Measurement_Data_DateTime = null;
+                }
+                else
+                {
+                    DateTime[] Measurement_DateTime = this.Measurement_DateTime.ToArray(); //Datetime data for the measurement data
+                    Create_Waveform_Window(FileName, "", 0, 0, count - 1, Graph_Title_text.Text, Graph_Y_axisTitle_text.Text, Value_Red, Value_Green, Value_Blue, Measurement_Data, count, Measurement_DateTime);
+                }
                 this.Measurement_DateTime.Clear();
                 this.Measurement_Data.Clear();
                 if (Clear_input_fields.IsChecked == true) 
@@ -322,6 +335,33 @@ namespace Data_Log_Graphing_Utility
             {
                 insert_Log(Ex.Message, 1);
                 insert_Log("Waveform Window creation failed.", 1);
+                this.Measurement_DateTime.Clear();
+                this.Measurement_Data.Clear();
+            }
+        }
+
+        //Creates DateTime Math Waveform Windows
+        private void Create_Waveform_Window(string FileName, string Window_Title, double Value, int Start_Sample, int End_Sample, string Graph_Title, string Y_Axis_Label, int Red, int Green, int Blue, double[] Measurement_Data, int Measurement_Count, double[] Measurement_DateTime)
+        {
+            try
+            {
+                Thread Waveform_Thread = new Thread(new ThreadStart(() =>
+                {
+                    DateTime_Math_Waveform Calculate_Waveform = new DateTime_Math_Waveform(FileName, Window_Title, Value, Start_Sample, End_Sample, Graph_Title, Y_Axis_Label, Red, Green, Blue, Measurement_Data, Measurement_Count, Measurement_DateTime);
+                    Calculate_Waveform.Show();
+                    Calculate_Waveform.Closed += (sender2, e2) => Calculate_Waveform.Dispatcher.InvokeShutdown();
+                    Dispatcher.Run();
+                }));
+                Waveform_Thread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+                Waveform_Thread.CurrentUICulture = CultureInfo.CreateSpecificCulture("en-US");
+                Waveform_Thread.SetApartmentState(ApartmentState.STA);
+                Waveform_Thread.IsBackground = true;
+                Waveform_Thread.Start();
+            }
+            catch (Exception Ex)
+            {
+                insert_Log(Ex.Message, 1);
+                insert_Log("DateTime Math Waveform Window creation failed.", 1);
                 this.Measurement_DateTime.Clear();
                 this.Measurement_Data.Clear();
             }

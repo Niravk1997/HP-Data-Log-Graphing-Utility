@@ -81,6 +81,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DateTime_Math_Waveform.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Histogram_Waveform.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -92,6 +96,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DateTime_Math_Waveform.xaml.cs">
+      <DependentUpon>DateTime_Math_Waveform.xaml</DependentUpon>
     </Compile>
     <Compile Include="Histogram_Waveform.xaml.cs">
       <DependentUpon>Histogram_Waveform.xaml</DependentUpon>
