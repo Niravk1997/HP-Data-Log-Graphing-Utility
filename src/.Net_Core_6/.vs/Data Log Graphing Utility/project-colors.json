@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "af5ea7df-4b60-446b-a916-e1e1a8f81ead": {
+      "ProjectGuid": "af5ea7df-4b60-446b-a916-e1e1a8f81ead",
+      "DisplayName": "Data Log Graphing Utility",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 1
+}
